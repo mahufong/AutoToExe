@@ -90,14 +90,20 @@ jobs:
                 if (Test-Path "log_classifier_qt.py") {
                     # 检查是否有图标文件
                     if (Test-Path "icon.ico") {
-                        pyinstaller --onefile --name $dir.Name --windowed --icon=icon.ico --noconsole log_classifier_qt.py
+                        Write-Host "Found icon.ico file, using it for build"
+                        $iconPath = (Resolve-Path "icon.ico").Path
+                        Write-Host "Icon path: $iconPath"
+                        pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole log_classifier_qt.py
                     } else {
                         pyinstaller --onefile --name $dir.Name --windowed --noconsole log_classifier_qt.py
                     }
                 } elseif (Test-Path "main.py") {
                     
                     if (Test-Path "icon.ico") {
-                        pyinstaller --onefile --name $dir.Name --windowed --icon=icon.ico --noconsole main.py
+                        Write-Host "Found icon.ico file, using it for build"
+                        $iconPath = (Resolve-Path "icon.ico").Path
+                        Write-Host "Icon path: $iconPath"
+                        pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole main.py
                     } else {
                         pyinstaller --onefile --name $dir.Name --windowed --noconsole main.py
                     }
@@ -105,7 +111,10 @@ jobs:
                     # 使用第一个找到的Python文件
                     $firstPyFile = $pyFiles[0].Name
                     if (Test-Path "icon.ico") {
-                        pyinstaller --onefile --name $dir.Name --windowed --icon=icon.ico --noconsole $firstPyFile
+                        Write-Host "Found icon.ico file, using it for build"
+                        $iconPath = (Resolve-Path "icon.ico").Path
+                        Write-Host "Icon path: $iconPath"
+                        pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole $firstPyFile
                     } else {
                         pyinstaller --onefile --name $dir.Name --windowed --noconsole $firstPyFile
                     }
