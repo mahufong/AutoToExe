@@ -93,7 +93,14 @@ jobs:
                         Write-Host "Found icon.ico file, using it for build"
                         $iconPath = (Resolve-Path "icon.ico").Path
                         Write-Host "Icon path: $iconPath"
-                        pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole log_classifier_qt.py
+                        Write-Host "Testing icon file accessibility..."
+                        if ((Get-Item $iconPath).Length -gt 0) {
+                            Write-Host "Icon file is accessible and has content"
+                            pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole log_classifier_qt.py
+                        } else {
+                            Write-Host "WARNING: Icon file appears to be empty or inaccessible"
+                            pyinstaller --onefile --name $dir.Name --windowed --noconsole log_classifier_qt.py
+                        }
                     } else {
                         pyinstaller --onefile --name $dir.Name --windowed --noconsole log_classifier_qt.py
                     }
@@ -103,7 +110,14 @@ jobs:
                         Write-Host "Found icon.ico file, using it for build"
                         $iconPath = (Resolve-Path "icon.ico").Path
                         Write-Host "Icon path: $iconPath"
-                        pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole main.py
+                        Write-Host "Testing icon file accessibility..."
+                        if ((Get-Item $iconPath).Length -gt 0) {
+                            Write-Host "Icon file is accessible and has content"
+                            pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole main.py
+                        } else {
+                            Write-Host "WARNING: Icon file appears to be empty or inaccessible"
+                            pyinstaller --onefile --name $dir.Name --windowed --noconsole main.py
+                        }
                     } else {
                         pyinstaller --onefile --name $dir.Name --windowed --noconsole main.py
                     }
@@ -114,7 +128,14 @@ jobs:
                         Write-Host "Found icon.ico file, using it for build"
                         $iconPath = (Resolve-Path "icon.ico").Path
                         Write-Host "Icon path: $iconPath"
-                        pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole $firstPyFile
+                        Write-Host "Testing icon file accessibility..."
+                        if ((Get-Item $iconPath).Length -gt 0) {
+                            Write-Host "Icon file is accessible and has content"
+                            pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole $firstPyFile
+                        } else {
+                            Write-Host "WARNING: Icon file appears to be empty or inaccessible"
+                            pyinstaller --onefile --name $dir.Name --windowed --noconsole $firstPyFile
+                        }
                     } else {
                         pyinstaller --onefile --name $dir.Name --windowed --noconsole $firstPyFile
                     }
