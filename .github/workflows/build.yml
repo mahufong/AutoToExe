@@ -25,29 +25,39 @@ jobs:
     
     - name: Build all projects
       run: |
-        echo "Building all projects..."
-        for dir in */; do
-          if [ -f "${dir}main.py" ] || [ -f "${dir}*.py" ]; then
-            echo "=== Building $dir ==="
-            cd "$dir"
+        Write-Host "Building all projects..."
+        
+        # 获取所有目录
+        $directories = Get-ChildItem -Directory
+        
+        foreach ($dir in $directories) {
+            $pyFiles = Get-ChildItem -Path $dir.FullName -Filter "*.py"
             
-            # 检查并安装依赖包
-            if [ -f "requirements.txt" ]; then
-              echo "Installing dependencies from requirements.txt"
-              pip install -r requirements.txt
-            fi
-            
-            # 查找主要的Python文件
-            if [ -f "main.py" ]; then
-              pyinstaller --onefile --name "$(basename $dir)" main.py
-            else
-              # 使用第一个找到的Python文件
-              first_py_file=$(ls *.py | head -1)
-              pyinstaller --onefile --name "$(basename $dir)" "$first_py_file"
-            fi
-            cd ..
-          fi
-        done
+            if ($pyFiles.Count -gt 0) {
+                Write-Host "=== Building $($dir.Name) ==="
+                
+                # 切换到项目目录
+                Set-Location $dir.FullName
+                
+                # 检查并安装依赖包
+                if (Test-Path "requirements.txt") {
+                    Write-Host "Installing dependencies from requirements.txt"
+                    pip install -r requirements.txt
+                }
+                
+                # 查找主要的Python文件
+                if (Test-Path "main.py") {
+                    pyinstaller --onefile --name $dir.Name main.py
+                } else {
+                    # 使用第一个找到的Python文件
+                    $firstPyFile = $pyFiles[0].Name
+                    pyinstaller --onefile --name $dir.Name $firstPyFile
+                }
+                
+                # 返回上级目录
+                Set-Location ..
+            }
+        }
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
