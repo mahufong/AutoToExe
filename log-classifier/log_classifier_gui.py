@@ -26,12 +26,20 @@ class LogClassifierGUI:
         
         ttk.Label(main_frame, text="输入日志文件:").grid(row=0, column=0, sticky=tk.W, pady=5)
         
+        # 创建拖放区域
         drop_frame = ttk.Frame(main_frame)
         drop_frame.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
         drop_frame.columnconfigure(0, weight=1)
         
         self.input_entry = ttk.Entry(drop_frame, textvariable=self.input_file, width=40)
         self.input_entry.grid(row=0, column=0, sticky=(tk.W, tk.E))
+        
+        # 设置拖放提示
+        self.input_entry.insert(0, "拖放日志文件到这里或点击浏览...")
+        self.input_entry.configure(foreground="gray")
+        
+        # 绑定拖放事件
+        self.setup_drag_drop()
         
         ttk.Button(main_frame, text="浏览...", command=self.browse_input_file).grid(row=0, column=2, padx=5, pady=5)
         
@@ -64,12 +72,62 @@ class LogClassifierGUI:
         )
         if filename:
             self.input_file.set(filename)
+            # 清除提示文本
+            if self.input_entry.get() == "拖放日志文件到这里或点击浏览...":
+                self.input_entry.delete(0, tk.END)
+                self.input_entry.configure(foreground="black")
             self.status_text.set(f"已选择文件: {os.path.basename(filename)}")
     
     def browse_output_dir(self):
         directory = filedialog.askdirectory(title="选择输出目录")
         if directory:
             self.output_dir.set(directory)
+    
+    def setup_drag_drop(self):
+        """设置文件拖放功能"""
+        # 绑定拖放事件
+        self.input_entry.bind("<Button-1>", self.on_entry_click)
+        self.input_entry.bind("<DragEnter>", self.on_drag_enter)
+        self.input_entry.bind("<DragLeave>", self.on_drag_leave)
+        self.input_entry.bind("<Drop>", self.on_drop)
+    
+    def on_entry_click(self, event):
+        """点击输入框时清除提示文本"""
+        if self.input_entry.get() == "拖放日志文件到这里或点击浏览...":
+            self.input_entry.delete(0, tk.END)
+            self.input_entry.configure(foreground="black")
+    
+    def on_drag_enter(self, event):
+        """拖拽进入时的视觉效果"""
+        self.input_entry.configure(background="#e0e0e0")
+        return True
+    
+    def on_drag_leave(self, event):
+        """拖拽离开时恢复样式"""
+        self.input_entry.configure(background="white")
+    
+    def on_drop(self, event):
+        """处理文件拖放"""
+        self.input_entry.configure(background="white")
+        
+        # 获取拖放的文件路径
+        file_path = event.data
+        
+        # 清理路径（移除可能的括号）
+        if isinstance(file_path, str):
+            file_path = file_path.strip().replace('{', '').replace('}', '')
+            
+            # 检查是否是有效的文件
+            if file_path and os.path.isfile(file_path):
+                # 检查文件扩展名
+                if file_path.lower().endswith(('.txt', '.log')):
+                    self.input_file.set(file_path)
+                    self.input_entry.configure(foreground="black")
+                    self.status_text.set(f"已选择文件: {os.path.basename(file_path)}")
+                else:
+                    messagebox.showwarning("警告", "请拖放.txt或.log格式的日志文件")
+            else:
+                messagebox.showwarning("警告", "请拖放有效的日志文件")
     
     def start_processing(self):
         input_file = self.input_file.get()
@@ -97,7 +155,7 @@ class LogClassifierGUI:
             self.append_log(f"正在从 '{input_file}' 读取日志...")
             self.append_log(f"分类后的日志将被保存在目录: '{output_dir}/'")
             
-            thread_pattern = re.compile(r'^(\d+):\d+>')
+            thread_pattern = re.compile(r'^<(\d+):\d+>')
             
             if not os.path.exists(input_file):
                 self.append_log(f"错误：输入文件 '{input_file}' 不存在")
