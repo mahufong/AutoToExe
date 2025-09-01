@@ -1,0 +1,57 @@
+name: Build Executables
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install PyInstaller
+      run: pip install pyinstaller
+    
+    - name: Build all projects
+      run: |
+        echo "Building all projects..."
+        for dir in */; do
+          if [ -f "${dir}main.py" ] || [ -f "${dir}*.py" ]; then
+            echo "=== Building $dir ==="
+            cd "$dir"
+            
+            # 检查并安装依赖包
+            if [ -f "requirements.txt" ]; then
+              echo "Installing dependencies from requirements.txt "
+              pip install -r requirements.txt
+            fi
+            
+            # 查找主要的Python文件
+            if [ -f "main.py" ]; then
+              pyinstaller --onefile --name "$(basename $dir)" main.py
+            else
+              # 使用第一个找到的Python文件
+              first_py_file=$(ls *.py | head -1)
+              pyinstaller --onefile --name "$(basename $dir)" "$first_py_file"
+            fi
+            cd ..
+          fi
+        done
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: executables
+        path: |
+          */dist/*.exe
