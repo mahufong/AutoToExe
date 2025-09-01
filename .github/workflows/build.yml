@@ -88,13 +88,18 @@ jobs:
                 
                 # 查找主要的Python文件 (优先使用Qt版本)
                 if (Test-Path "log_classifier_qt.py") {
-                    pyinstaller --onefile --name $dir.Name --windowed log_classifier_qt.py
+                    # 检查是否有图标文件
+                    $iconParam = ""
+                    if (Test-Path "icon.ico") {
+                        $iconParam = "--icon=icon.ico"
+                    }
+                    pyinstaller --onefile --name $dir.Name --windowed $iconParam --noconsole log_classifier_qt.py
                 } elseif (Test-Path "main.py") {
-                    pyinstaller --onefile --name $dir.Name main.py
+                    pyinstaller --onefile --name $dir.Name --windowed --noconsole main.py
                 } else {
                     # 使用第一个找到的Python文件
                     $firstPyFile = $pyFiles[0].Name
-                    pyinstaller --onefile --name $dir.Name $firstPyFile
+                    pyinstaller --onefile --name $dir.Name --windowed --noconsole $firstPyFile
                 }
                 
                 # 返回上级目录

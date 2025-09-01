@@ -84,7 +84,7 @@ pip install pyinstaller PyQt5
 
 # 构建PyQt5项目
 cd log-classifier
-pyinstaller --onefile --name LogClassifier --windowed log_classifier_qt.py
+pyinstaller --onefile --name LogClassifier --windowed --icon=icon.ico --noconsole log_classifier_qt.py
 
 # 运行程序
 dist/LogClassifier.exe
@@ -98,7 +98,8 @@ python test_log_classifier.py
 ## 注意事项
 
 - 确保Python文件有正确的 `if __name__ == "__main__":` 入口
-- GUI程序使用 `--windowed` 参数避免控制台窗口
+- GUI程序使用 `--windowed` 和 `--noconsole` 参数避免控制台窗口
+- 使用 `--icon=icon.ico` 为程序添加自定义图标
 - 避免在测试中使用Unicode符号（✓/✗），使用PASS/FAIL文本
 - PyQt5程序需要正确的线程处理，避免UI卡顿
 - 大型项目可能需要额外的系统依赖配置
