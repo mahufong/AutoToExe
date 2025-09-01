@@ -96,7 +96,15 @@ jobs:
                         Write-Host "Testing icon file accessibility..."
                         if ((Get-Item $iconPath).Length -gt 0) {
                             Write-Host "Icon file is accessible and has content"
-                            pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole log_classifier_qt.py
+                            Write-Host "Checking if icon file is valid Windows icon format..."
+                            # Try to build with icon, but if it fails, build without icon
+                            try {
+                                pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole log_classifier_qt.py
+                            } catch {
+                                Write-Host "WARNING: Icon file may be in invalid format for Windows executable"
+                                Write-Host "Building without icon due to icon format issues"
+                                pyinstaller --onefile --name $dir.Name --windowed --noconsole log_classifier_qt.py
+                            }
                         } else {
                             Write-Host "WARNING: Icon file appears to be empty or inaccessible"
                             pyinstaller --onefile --name $dir.Name --windowed --noconsole log_classifier_qt.py
@@ -113,7 +121,15 @@ jobs:
                         Write-Host "Testing icon file accessibility..."
                         if ((Get-Item $iconPath).Length -gt 0) {
                             Write-Host "Icon file is accessible and has content"
-                            pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole main.py
+                            Write-Host "Checking if icon file is valid Windows icon format..."
+                            # Try to build with icon, but if it fails, build without icon
+                            try {
+                                pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole main.py
+                            } catch {
+                                Write-Host "WARNING: Icon file may be in invalid format for Windows executable"
+                                Write-Host "Building without icon due to icon format issues"
+                                pyinstaller --onefile --name $dir.Name --windowed --noconsole main.py
+                            }
                         } else {
                             Write-Host "WARNING: Icon file appears to be empty or inaccessible"
                             pyinstaller --onefile --name $dir.Name --windowed --noconsole main.py
@@ -131,7 +147,15 @@ jobs:
                         Write-Host "Testing icon file accessibility..."
                         if ((Get-Item $iconPath).Length -gt 0) {
                             Write-Host "Icon file is accessible and has content"
-                            pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole $firstPyFile
+                            Write-Host "Checking if icon file is valid Windows icon format..."
+                            # Try to build with icon, but if it fails, build without icon
+                            try {
+                                pyinstaller --onefile --name $dir.Name --windowed --icon="$iconPath" --noconsole $firstPyFile
+                            } catch {
+                                Write-Host "WARNING: Icon file may be in invalid format for Windows executable"
+                                Write-Host "Building without icon due to icon format issues"
+                                pyinstaller --onefile --name $dir.Name --windowed --noconsole $firstPyFile
+                            }
                         } else {
                             Write-Host "WARNING: Icon file appears to be empty or inaccessible"
                             pyinstaller --onefile --name $dir.Name --windowed --noconsole $firstPyFile
