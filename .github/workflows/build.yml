@@ -33,7 +33,7 @@ jobs:
             
             # 检查并安装依赖包
             if [ -f "requirements.txt" ]; then
-              echo "Installing dependencies from requirements.txt"
+              echo "Installing dependencies from requirements.txt "
               pip install -r requirements.txt
             fi
             
