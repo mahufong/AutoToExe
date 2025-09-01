@@ -28,15 +28,15 @@ def test_regex_pattern():
         
         if should_match:
             if match and match.group(1) == expected_id:
-                print(f"✓ Test {i}: '{line}' -> ID: {match.group(1)}")
+                print(f"PASS Test {i}: '{line}' -> ID: {match.group(1)}")
             else:
-                print(f"✗ Test {i}: '{line}' -> Expected ID: {expected_id}, Got: {match.group(1) if match else None}")
+                print(f"FAIL Test {i}: '{line}' -> Expected ID: {expected_id}, Got: {match.group(1) if match else None}")
                 all_passed = False
         else:
             if not match:
-                print(f"✓ Test {i}: '{line}' -> No match (correct)")
+                print(f"PASS Test {i}: '{line}' -> No match (correct)")
             else:
-                print(f"✗ Test {i}: '{line}' -> Unexpected match: {match.group(1)}")
+                print(f"FAIL Test {i}: '{line}' -> Unexpected match: {match.group(1)}")
                 all_passed = False
     
     return all_passed
@@ -90,12 +90,12 @@ No thread ID here, should go to last thread
         expected_threads = ['123', '789', '999']
         for thread_id in expected_threads:
             if thread_id in open_files:
-                print(f"✓ Thread {thread_id} has {len(open_files[thread_id])} lines")
+                print(f"PASS Thread {thread_id} has {len(open_files[thread_id])} lines")
             else:
-                print(f"✗ Thread {thread_id} not found")
+                print(f"FAIL Thread {thread_id} not found")
                 return False
         
-        print("✓ File processing test passed")
+        print("PASS File processing test passed")
         return True
         
     finally:
@@ -109,10 +109,10 @@ def main():
     test2_passed = test_file_processing()
     
     if test1_passed and test2_passed:
-        print("\n✓ All tests passed!")
+        print("\nPASS All tests passed!")
         return 0
     else:
-        print("\n✗ Some tests failed!")
+        print("\nFAIL Some tests failed!")
         return 1
 
 if __name__ == "__main__":
