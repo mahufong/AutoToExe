@@ -2,9 +2,9 @@ name: Build Executables
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -20,8 +20,11 @@ jobs:
       with:
         python-version: '3.9'
     
-    - name: Install PyInstaller
-      run: pip install pyinstaller
+    - name: Install PyInstaller and dependencies
+      run: |
+        pip install pyinstaller
+        # Install PyQt5 dependencies
+        pip install PyQt5==5.15.9
     
     - name: Run tests
       run: |
@@ -83,8 +86,10 @@ jobs:
                     pip install -r requirements.txt
                 }
                 
-                # 查找主要的Python文件
-                if (Test-Path "main.py") {
+                # 查找主要的Python文件 (优先使用Qt版本)
+                if (Test-Path "log_classifier_qt.py") {
+                    pyinstaller --onefile --name $dir.Name --windowed log_classifier_qt.py
+                } elseif (Test-Path "main.py") {
                     pyinstaller --onefile --name $dir.Name main.py
                 } else {
                     # 使用第一个找到的Python文件
