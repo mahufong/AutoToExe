@@ -23,6 +23,44 @@ jobs:
     - name: Install PyInstaller
       run: pip install pyinstaller
     
+    - name: Run tests
+      run: |
+        Write-Host "Running tests for all projects..."
+        
+        # 获取所有目录
+        $directories = Get-ChildItem -Directory
+        
+        foreach ($dir in $directories) {
+            $pyFiles = Get-ChildItem -Path $dir.FullName -Filter "*.py"
+            
+            if ($pyFiles.Count -gt 0) {
+                Write-Host "=== Testing $($dir.Name) ==="
+                
+                # 切换到项目目录
+                Set-Location $dir.FullName
+                
+                # 检查并安装依赖包
+                if (Test-Path "requirements.txt") {
+                    Write-Host "Installing dependencies from requirements.txt"
+                    pip install -r requirements.txt
+                }
+                
+                # 运行测试文件（如果存在）
+                if (Test-Path "test_*.py") {
+                    $testFiles = Get-ChildItem -Filter "test_*.py"
+                    foreach ($testFile in $testFiles) {
+                        Write-Host "Running test: $($testFile.Name)"
+                        python $testFile.Name
+                    }
+                } else {
+                    Write-Host "No test files found in $($dir.Name)"
+                }
+                
+                # 返回上级目录
+                Set-Location ..
+            }
+        }
+    
     - name: Build all projects
       run: |
         Write-Host "Building all projects..."

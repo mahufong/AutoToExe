@@ -85,11 +85,16 @@ class LogClassifierGUI:
     
     def setup_drag_drop(self):
         """设置文件拖放功能"""
-        # 绑定拖放事件
+        # 绑定点击事件
         self.input_entry.bind("<Button-1>", self.on_entry_click)
-        self.input_entry.bind("<DragEnter>", self.on_drag_enter)
-        self.input_entry.bind("<DragLeave>", self.on_drag_leave)
-        self.input_entry.bind("<Drop>", self.on_drop)
+        
+        # 在Windows上，使用简单的标签提示拖放功能
+        # Tkinter在Windows上不支持原生的DragEnter/DragLeave/Drop事件
+        drop_label = ttk.Label(self.input_entry.master, text="← 拖放文件", foreground="blue")
+        drop_label.grid(row=0, column=1, padx=(5, 0))
+        
+        # 绑定点击标签到浏览功能
+        drop_label.bind("<Button-1>", lambda e: self.browse_input_file())
     
     def on_entry_click(self, event):
         """点击输入框时清除提示文本"""
